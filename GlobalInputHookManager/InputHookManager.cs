@@ -1,35 +1,24 @@
-﻿using MySpy.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GlobalInputHookManager.Utils;
+﻿using GlobalInputHookManager.Enums;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 namespace GlobalInputHookManager
 {
-    using static WinMessages;
-    //using static WindowUtils;
-    using static KeyboardHook;
-
-    public class InputHookManager
+    public class InputHookManager : IDisposable
     {
-        public static IntPtr HWND { get; set; } = IntPtr.Zero;
-        public static Dictionary<HotKey, Action<Object>> KeyMappingsPressed = new Dictionary<HotKey, Action<Object>>();
-        public static Dictionary<HotKey, Action<Object>> KeyMappingsReleased = new Dictionary<HotKey, Action<Object>>();
+        public static IntPtr Hwnd { get; set; } = IntPtr.Zero;
+        public static Dictionary<HotKey, Action<Object>> KeyMappingsPressed = [];
+        public static Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
 
-        public static Dictionary<Keys, bool> KeyStates = new Dictionary<Keys, bool>();
-        public static List<HotKey> AllowedKeys = new List<HotKey>();
-        public static HotKey KeyPressed = new HotKey();
+        public static Dictionary<Keys, bool> KeyStates = [];
+        public static List<HotKey> AllowedKeys = [];
+        public static HotKey KeyPressed = new();
 
         public void Install()
         {
-            if (Id == IntPtr.Zero)
+            if (KeyboardHook.Id == IntPtr.Zero)
             {
-                KeyboardHook.Id = SetHook(KeyboardProc);
+                KeyboardHook.Id = SetHook(KeyboardHook.Proc);
                 //MouseHookId = SetMouseHook(_mouseProc);
                 //Enable();
             }
@@ -41,19 +30,10 @@ namespace GlobalInputHookManager
         public void Uninstall()
         {
             //Disable();
-            UnhookWindowsHookEx(Id);
-            Id = IntPtr.Zero;
+            UnhookWindowsHookEx(KeyboardHook.Id);
+            KeyboardHook.Id = IntPtr.Zero;
             //UnhookWindowsHookEx(MouseHookId);
             //MouseHookId = IntPtr.Zero;
-        }
-
-        private static IntPtr SetHook(LowLevelKeyboardProc proc)
-        {
-            using (Process curProcess = Process.GetCurrentProcess())
-            using (ProcessModule curModule = curProcess.MainModule)
-            {
-                return SetWindowsHookEx((int)WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
-            }
         }
 
         public void RegisterAction(HotKey hotkey, Action<Object> act, KeyState keyState = KeyState.Released)
@@ -84,19 +64,33 @@ namespace GlobalInputHookManager
                         KeyMappingsReleased.Remove(hotkey);
             }
         }
-
         public void ClearActions()
         {
             KeyMappingsPressed.Clear();
             KeyMappingsReleased.Clear();
         }
+
+
         public bool IsKeyDown(Keys key)
         {
             return KeyStates[key];
         }
 
+        private static IntPtr SetHook(KeyboardHook.LowLevelKeyboardProc proc)
+        {
+            using Process curProcess = Process.GetCurrentProcess();
+            using ProcessModule curModule = curProcess.MainModule!;
+            return SetWindowsHookEx((int)WinMessages.WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
+        }
+
+        public void Dispose()
+        {
+            ClearActions();
+            Uninstall();
+        }
+
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+        private static extern IntPtr SetWindowsHookEx(int idHook, KeyboardHook.LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
         //[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         //private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
@@ -107,5 +101,7 @@ namespace GlobalInputHookManager
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+
     }
 }

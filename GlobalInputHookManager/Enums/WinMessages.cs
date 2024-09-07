@@ -1,4 +1,4 @@
-﻿namespace MySpy.Enums
+﻿namespace GlobalInputHookManager
 {
     public enum WinMessages : uint
     {

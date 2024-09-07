@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace GlobalInputHookManager.Utils
 {
-    internal static class WindowUtils
+    public static class WindowUtils
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct MSLLHOOKSTRUCT
@@ -24,13 +24,8 @@ namespace GlobalInputHookManager.Utils
 
         public static bool IsActiveWindow(IntPtr windowHandle)
         {
-            var activeHandle = GetHandleActiveWindow();
-            return (activeHandle != windowHandle);
-        }
-
-        public static IntPtr GetHandleActiveWindow()
-        {
-            return GetForegroundWindow();
+            var activeHandle = GetForegroundWindow();
+            return (activeHandle == windowHandle);
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]

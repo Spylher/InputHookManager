@@ -1,12 +1,6 @@
 ﻿using GlobalInputHookManager.Utils;
-using MySpy.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using GlobalInputHookManager.Enums;
 
 namespace GlobalInputHookManager
 {
@@ -17,7 +11,7 @@ namespace GlobalInputHookManager
     public class KeyboardHook
     {
         public delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-        public static LowLevelKeyboardProc KeyboardProc = KeyboardHookCallback;
+        public static LowLevelKeyboardProc Proc = KeyboardHookCallback;
         public static IntPtr Id = IntPtr.Zero;
 
         private static IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
@@ -39,48 +33,45 @@ namespace GlobalInputHookManager
             {
                 KeyStates[keyCode] = true;
 
-                foreach (var HK in KeyMappingsPressed)
+                foreach (var hotKeyAction in KeyMappingsPressed)
                 {
-                    bool isSubset = KeyPressed.Equals(HK.Key);
+                    var isSubset = KeyPressed.Equals(hotKeyAction.Key);
 
                     if (isSubset)
                     {
                         if (AllowedKeys.Contains(KeyPressed))
-                            HK.Value.Invoke(KeyPressed.MainKey);
-                        else if (IsActiveWindow(HWND)) //other key invoke just if app is visible
+                            hotKeyAction.Value.Invoke(KeyPressed.MainKey);
+                        else if (IsActiveWindow(Hwnd)) //other key invoke just if app is visible
                         {
-                            HK.Value.Invoke(KeyPressed.MainKey);
-                            return (IntPtr)1; // suppress_key
+                            hotKeyAction.Value.Invoke(KeyPressed.MainKey);
+                            return 1; // suppress_key
                         }
                     }
                 }
 
-                foreach (var HK in KeyMappingsReleased)
-                    if (KeyPressed.Equals(HK.Key) && IsActiveWindow(HWND))
-                        return (IntPtr)1;
+                foreach (var hotKeyAction in KeyMappingsReleased)
+                    if (KeyPressed.Equals(hotKeyAction.Key) && IsActiveWindow(Hwnd))
+                        return 1;
             }
             else if (nCode >= 0 && (wParam == (IntPtr)WM_KEYUP || wParam == (IntPtr)WM_SYSKEYUP)) // WM_KEYUP
             {
                 KeyStates[keyCode] = false;
 
-                foreach (var HK in KeyMappingsReleased)
+                foreach (var hotKeyAction in KeyMappingsReleased)
                 {
-                    //MessageBox.Show($"pressed{KeyPressed},  list {HK.Key}");
-                    bool isSubset = KeyPressed.Equals(HK.Key);
+                    bool isSubset = KeyPressed.Equals(hotKeyAction.Key);
 
                     if (isSubset)
                     {
-                        //keyStart -> invoke function of keystart
-                        //if (KeyStart.MainKey.ToString() == KeyPressed.ToString())
                         if (AllowedKeys.Contains(KeyPressed))
                         {
-                            HK.Value.Invoke(KeyPressed.MainKey);
+                            hotKeyAction.Value.Invoke(KeyPressed.MainKey);
                             break;
                         }
-                        else if (IsActiveWindow(HWND))
+                        else if (IsActiveWindow(Hwnd))
                         {
-                            HK.Value.Invoke(KeyPressed.MainKey);
-                            return (IntPtr)1; // suppress_key
+                            hotKeyAction.Value.Invoke(KeyPressed.MainKey);
+                            return 1; // suppress_key
                         }
                     }
                 }
