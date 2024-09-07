@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace GlobalInputHookManager
 {
@@ -13,7 +9,7 @@ namespace GlobalInputHookManager
         public bool CtrlKeyPressed { get; set; }
         public bool ShiftKeyPressed { get; set; }
         public bool AltKeyPressed { get; set; }
-        public Keys MainKey { get; set; }
+        public Keys MainKey { get; set; } = Keys.None;
 
         public HotKey(Keys mainKey = Keys.None, bool ctrlKeyPressed = false, bool shiftKeyPressed = false, bool altKeyPressed = false)
         {
@@ -23,36 +19,28 @@ namespace GlobalInputHookManager
             MainKey = mainKey;
         }
 
-        public static HotKey GetByText(string text)
+        public HotKey(string text)
         {
-            var hotKey = new HotKey();
+            if (string.IsNullOrEmpty(text)) return;
 
             if (text.Contains("Ctrl+"))
             {
-                hotKey.CtrlKeyPressed = true;
+                CtrlKeyPressed = true;
                 text = text.Replace("Ctrl+", "");
             }
             if (text.Contains("Shift+"))
             {
-                hotKey.ShiftKeyPressed = true;
+                ShiftKeyPressed = true;
                 text = text.Replace("Shift+", "");
             }
             if (text.Contains("Alt+"))
             {
-                hotKey.AltKeyPressed = true;
+                AltKeyPressed = true;
                 text = text.Replace("Alt+", "");
             }
 
-
-            if (!string.IsNullOrEmpty(text))
-            {
-                Keys key = (Keys)Enum.Parse(typeof(Keys), text, true);
-                hotKey.MainKey = key;
-            }
-
-            return hotKey;
+            MainKey = (Keys)Enum.Parse(typeof(Keys), text, true);
         }
-
 
         public void Clear()
         {
@@ -64,7 +52,7 @@ namespace GlobalInputHookManager
 
         public override string ToString()
         {
-            var invalidKeys = new List<Keys>{ Keys.Back, Keys.Space, Keys.Capital, Keys.LWin, Keys.RWin, Keys.Escape, Keys.Delete, Keys.None };
+            var invalidKeys = new List<Keys> { Keys.Back, Keys.Space, Keys.Capital, Keys.LWin, Keys.RWin, Keys.Escape, Keys.Delete, Keys.None };
             var shortcut = string.Empty;
 
             if (CtrlKeyPressed && ShiftKeyPressed)
@@ -79,7 +67,6 @@ namespace GlobalInputHookManager
                 shortcut += "Shift+";
             else if (AltKeyPressed)
                 shortcut += "Alt+";
-
             if (invalidKeys.Contains(MainKey))
                 shortcut = "None";
             else
@@ -90,16 +77,16 @@ namespace GlobalInputHookManager
 
         public override bool Equals(object obj)
         {
-            if (obj is HotKey otherClass)
-                return GetHashCode() == otherClass.GetHashCode();
+            if (obj is HotKey otherHk)
+                return GetHashCode() == otherHk.GetHashCode();
 
             return false;
         }
 
-        //public override int GetHashCode()
-        //{
-        //    return HashCode.Combine(MainKey, CtrlKeyPressed, ShiftKeyPressed, AltKeyPressed);
-        //}
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
 
         public static implicit operator string(HotKey hotKey)
         {
