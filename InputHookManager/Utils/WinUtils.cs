@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace GlobalInputHookManager.Utils
+namespace InputHookManager.Utils
 {
-    public static class WindowUtils
+    public static class WinUtils
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct MSLLHOOKSTRUCT

@@ -1,4 +1,4 @@
-namespace GlobalInputHookManager.WinForms
+namespace InputHookManager.Forms
 {
     internal static class Program
     {

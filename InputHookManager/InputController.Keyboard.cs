@@ -1,35 +1,31 @@
-﻿using GlobalInputHookManager.Utils;
+﻿using InputHookManager.Enums;
+using InputHookManager.Utils;
 using System.Runtime.InteropServices;
-using GlobalInputHookManager.Enums;
 
-namespace GlobalInputHookManager
+namespace InputHookManager
 {
-    using static InputHookManager;
-    using static WinMessages;
-    using static WindowUtils;
-
-    public class KeyboardHook
+    public partial class InputController
     {
         public delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-        public static LowLevelKeyboardProc Proc = KeyboardHookCallback;
-        public static IntPtr Id = IntPtr.Zero;
+        public LowLevelKeyboardProc KeyboardProc;
+        public IntPtr KeyboardId = IntPtr.Zero;
 
-        private static IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        public IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             var vkCode = Marshal.ReadInt32(lParam);
-            var keyCode = (Keys)vkCode;
+            var keyCode = (KeyInput)vkCode;
 
-            if (keyCode == Keys.LControlKey || keyCode == Keys.RControlKey || keyCode == Keys.ControlKey || keyCode == Keys.Control)
+            if (keyCode == KeyInput.LControlKey || keyCode == KeyInput.RControlKey || keyCode == KeyInput.ControlKey || keyCode == KeyInput.Control)
                 KeyPressed.CtrlKeyPressed = true;
-            else if (keyCode == Keys.LShiftKey || keyCode == Keys.RShiftKey || keyCode == Keys.ShiftKey || keyCode == Keys.Shift)
+            else if (keyCode == KeyInput.LShiftKey || keyCode == KeyInput.RShiftKey || keyCode == KeyInput.ShiftKey || keyCode == KeyInput.Shift)
                 KeyPressed.ShiftKeyPressed = true;
-            else if (keyCode == Keys.LMenu || keyCode == Keys.RMenu || keyCode == Keys.Menu || keyCode == Keys.Alt)
+            else if (keyCode == KeyInput.LMenu || keyCode == KeyInput.RMenu || keyCode == KeyInput.Menu || keyCode == KeyInput.Alt)
                 KeyPressed.AltKeyPressed = true;
             else
                 KeyPressed.MainKey = keyCode;
 
 
-            if (nCode >= 0 && (wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_SYSKEYDOWN))  // WM_KEYDOWN
+            if (nCode >= 0 && (wParam == (IntPtr)WinMessages.WM_KEYDOWN || wParam == (IntPtr)WinMessages.WM_SYSKEYDOWN))  // WM_KEYDOWN
             {
                 KeyStates[keyCode] = true;
 
@@ -41,7 +37,7 @@ namespace GlobalInputHookManager
                     {
                         if (AllowedKeys.Contains(KeyPressed))
                             hotKeyAction.Value.Invoke(KeyPressed.MainKey);
-                        else if (IsActiveWindow(Hwnd)) //other key invoke just if app is visible
+                        else if (WinUtils.IsActiveWindow(Hwnd)) //other key invoke just if app is visible
                         {
                             hotKeyAction.Value.Invoke(KeyPressed.MainKey);
                             return 1; // suppress_key
@@ -50,10 +46,10 @@ namespace GlobalInputHookManager
                 }
 
                 foreach (var hotKeyAction in KeyMappingsReleased)
-                    if (KeyPressed.Equals(hotKeyAction.Key) && IsActiveWindow(Hwnd))
+                    if (KeyPressed.Equals(hotKeyAction.Key) && WinUtils.IsActiveWindow(Hwnd))
                         return 1;
             }
-            else if (nCode >= 0 && (wParam == (IntPtr)WM_KEYUP || wParam == (IntPtr)WM_SYSKEYUP)) // WM_KEYUP
+            else if (nCode >= 0 && (wParam == (IntPtr)WinMessages.WM_KEYUP || wParam == (IntPtr)WinMessages.WM_SYSKEYUP)) // WM_KEYUP
             {
                 KeyStates[keyCode] = false;
 
@@ -68,7 +64,7 @@ namespace GlobalInputHookManager
                             hotKeyAction.Value.Invoke(KeyPressed.MainKey);
                             break;
                         }
-                        else if (IsActiveWindow(Hwnd))
+                        else if (WinUtils.IsActiveWindow(Hwnd))
                         {
                             hotKeyAction.Value.Invoke(KeyPressed.MainKey);
                             return 1; // suppress_key
@@ -79,11 +75,9 @@ namespace GlobalInputHookManager
                 KeyPressed.Clear();
             }
 
-            return CallNextHookEx(Id, nCode, wParam, lParam);
+            return CallNextHookEx(KeyboardId, nCode, wParam, lParam);
         }
 
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
     }
+
 }

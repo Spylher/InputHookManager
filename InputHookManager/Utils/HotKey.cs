@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-//using System.Windows.Forms;
-using GlobalInputHookManager.Enums;
+﻿using InputHookManager.Enums;
 
-namespace GlobalInputHookManager
+namespace InputHookManager.Utils
 {
     public class HotKey
     {
         public bool CtrlKeyPressed { get; set; }
         public bool ShiftKeyPressed { get; set; }
         public bool AltKeyPressed { get; set; }
-        public Keys MainKey { get; set; } = Keys.None;
+        public KeyInput MainKey { get; set; } = KeyInput.None;
 
-        public HotKey(Keys mainKey = Keys.None, bool ctrlKeyPressed = false, bool shiftKeyPressed = false, bool altKeyPressed = false)
+        public HotKey(KeyInput mainKey = KeyInput.None, bool ctrlKeyPressed = false, bool shiftKeyPressed = false, bool altKeyPressed = false)
         {
             CtrlKeyPressed = ctrlKeyPressed;
             ShiftKeyPressed = shiftKeyPressed;
@@ -40,7 +37,7 @@ namespace GlobalInputHookManager
                 text = text.Replace("Alt+", "");
             }
 
-            MainKey = (Keys)Enum.Parse(typeof(Keys), text, true);
+            MainKey = (KeyInput)Enum.Parse(typeof(KeyInput), text, true);
         }
 
         public void Clear()
@@ -48,12 +45,12 @@ namespace GlobalInputHookManager
             CtrlKeyPressed = false;
             AltKeyPressed = false;
             ShiftKeyPressed = false;
-            MainKey = Keys.None;
+            MainKey = KeyInput.None;
         }
 
         public override string ToString()
         {
-            var invalidKeys = new List<Keys> { Keys.Back, Keys.Space, Keys.Capital, Keys.LWin, Keys.RWin, Keys.Escape, Keys.Delete, Keys.None };
+            var invalidKeys = new List<KeyInput> { KeyInput.Back, KeyInput.Space, KeyInput.Capital, KeyInput.LWin, KeyInput.RWin, KeyInput.Escape, KeyInput.Delete, KeyInput.None };
             var shortcut = string.Empty;
 
             if (CtrlKeyPressed && ShiftKeyPressed)

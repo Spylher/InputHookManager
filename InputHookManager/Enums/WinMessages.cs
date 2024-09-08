@@ -1,4 +1,4 @@
-﻿namespace GlobalInputHookManager
+﻿namespace InputHookManager
 {
     public enum WinMessages : uint
     {
