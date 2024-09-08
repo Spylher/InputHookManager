@@ -6,11 +6,11 @@ namespace InputHookManager
 {
     public partial class InputController
     {
-        public delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-        public LowLevelKeyboardProc KeyboardProc;
-        public IntPtr KeyboardId = IntPtr.Zero;
+        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+        private LowLevelKeyboardProc KeyboardProc;
+        private IntPtr KeyboardId = IntPtr.Zero;
 
-        public IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             var vkCode = Marshal.ReadInt32(lParam);
             var keyCode = (KeyInput)vkCode;

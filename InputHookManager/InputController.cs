@@ -19,11 +19,11 @@ namespace InputHookManager
         {
             //keyboard
             KeyboardProc = KeyboardHookCallback;
-            KeyboardId = SetHook(KeyboardProc);
+            KeyboardId = SetKeyboardHook(KeyboardProc);
 
             //mouse
-            //KeyboardProc = KeyboardHookCallback;
-            //MouseHookId = SetMouseHook(_mouseProc);
+            MouseProc = MouseHookCallback;
+            MouseHookId = SetMouseHook(MouseProc);
 
             //Enable();
             foreach (KeyInput key in Enum.GetValues(typeof(KeyInput)))
@@ -67,11 +67,20 @@ namespace InputHookManager
 
         public bool IsKeyDown(KeyInput key) => KeyStates[key];
 
-        private IntPtr SetHook(LowLevelKeyboardProc proc)
+        private IntPtr SetKeyboardHook(LowLevelKeyboardProc proc)
         {
             using Process curProcess = Process.GetCurrentProcess();
             using ProcessModule curModule = curProcess.MainModule!;
             return SetWindowsHookEx((int)WinMessages.WH_KEYBOARD_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
+        }
+
+        private IntPtr SetMouseHook(LowLevelMouseProc proc)
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            using (ProcessModule curModule = curProcess.MainModule!)
+            {
+                return SetWindowsHookEx((int)WinMessages.WH_MOUSE_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
+            }
         }
 
         public void Dispose()
@@ -83,20 +92,20 @@ namespace InputHookManager
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        internal static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
-        //[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        //private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool UnhookWindowsHookEx(IntPtr hhk);
+        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        internal static extern IntPtr GetModuleHandle(string lpModuleName);
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        internal static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
     }
 
 }

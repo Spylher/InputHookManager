@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputHookManager", "InputHookManager\InputHookManager.csproj", "{FFED60C3-F033-41F7-882C-65CE53EC7796}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHookManager", "InputHookManager\InputHookManager.csproj", "{FFED60C3-F033-41F7-882C-65CE53EC7796}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputHookManager.Forms", "InputHookManager.Forms\InputHookManager.Forms.csproj", "{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHookManager.Forms", "InputHookManager.Forms\InputHookManager.Forms.csproj", "{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
