@@ -64,6 +64,12 @@
         Restore = 9
     }
 
+    public enum ActionMode
+    {
+        Default,
+        Global
+    }
+
     public enum WindowStateType
     {
         Borderless,

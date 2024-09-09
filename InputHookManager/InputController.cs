@@ -10,9 +10,10 @@ namespace InputHookManager
         public IntPtr Hwnd { get; set; } = IntPtr.Zero;
         public Dictionary<HotKey, Action<Object>> KeyMappingsPressed = [];
         public Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
-        public Dictionary<KeyInput, bool> KeyStates = [];
+        public Dictionary<KeyInput, bool> KeyState = [];
 
-        public List<HotKey> AllowedKeys = [];
+        private List<HotKey> AllowedKeys = [];
+        private List<HotKey> SuppressedKeys = [];
         public HotKey KeyPressed = new();
 
         public InputController()
@@ -27,31 +28,42 @@ namespace InputHookManager
 
             //Enable();
             foreach (KeyInput key in Enum.GetValues(typeof(KeyInput)))
-                KeyStates[key] = false;
+                KeyState[key] = false;
         }
 
-        public void RegisterAction(HotKey hotkey, Action<Object> act, KeyState keyState = KeyState.Released)
+        public void Attach(int pid) => Hwnd = Process.GetProcessById(pid).MainWindowHandle;
+
+        public void Attach(Process process) => Hwnd = process.MainWindowHandle;
+        
+        public void Attach(IntPtr hwnd) => Hwnd = hwnd;
+
+        public void RegisterAction(HotKey hotkey, Action<Object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Default, KeyState keyState = Enums.KeyState.Released)
         {
-            UnregisterAction(hotkey, KeyState.Pressed);
+            UnregisterAction(hotkey, Enums.KeyState.Pressed);
             UnregisterAction(hotkey);
 
-            if (keyState == KeyState.Pressed)
+            if (actionMode == ActionMode.Global) AllowedKeys.Add(hotkey);
+            if (suppressDefault) SuppressedKeys.Add(hotkey);
+
+            if (keyState == Enums.KeyState.Pressed)
                 KeyMappingsPressed.Add(hotkey, act);
-            else if (keyState == KeyState.Released)
+            else if (keyState == Enums.KeyState.Released)
                 KeyMappingsReleased.Add(hotkey, act);
         }
 
-        public void UnregisterAction(HotKey hotkey, KeyState keyState = KeyState.Released)
+        public void UnregisterAction(HotKey hotkey, KeyState keyState = Enums.KeyState.Released)
         {
+            if (AllowedKeys.Contains(hotkey)) AllowedKeys.Remove(hotkey);
+            if (SuppressedKeys.Contains(hotkey)) SuppressedKeys.Remove(hotkey);
 
-            if (keyState == KeyState.Pressed)
+            if (keyState == Enums.KeyState.Pressed)
             {
                 foreach (var keyValuePair in KeyMappingsPressed)
                     if (keyValuePair.Key.Equals(hotkey))
                         KeyMappingsPressed.Remove(hotkey);
 
             }
-            else if (keyState == KeyState.Released)
+            else if (keyState == Enums.KeyState.Released)
             {
                 foreach (var keyValuePair in KeyMappingsReleased)
                     if (keyValuePair.Key.Equals(hotkey))
@@ -61,11 +73,13 @@ namespace InputHookManager
 
         public void ClearActions()
         {
+            AllowedKeys.Clear();
+            SuppressedKeys.Clear();
             KeyMappingsPressed.Clear();
             KeyMappingsReleased.Clear();
         }
 
-        public bool IsKeyDown(KeyInput key) => KeyStates[key];
+        public bool IsKeyDown(KeyInput key) => KeyState[key];
 
         private IntPtr SetKeyboardHook(LowLevelKeyboardProc proc)
         {
@@ -88,7 +102,7 @@ namespace InputHookManager
             ClearActions();
             //Disable();
             UnhookWindowsHookEx(KeyboardId);
-            //UnhookWindowsHookEx(MouseHookId);
+            UnhookWindowsHookEx(MouseHookId);
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]

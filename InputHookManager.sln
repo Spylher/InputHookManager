@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHookManager", "InputHo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHookManager.Forms", "InputHookManager.Forms\InputHookManager.Forms.csproj", "{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHookManager.Tests", "InputHookManager.Tests\InputHookManager.Tests.csproj", "{0B188A98-9B7D-4F1E-BD83-2512085BE83E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B188A98-9B7D-4F1E-BD83-2512085BE83E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B188A98-9B7D-4F1E-BD83-2512085BE83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B188A98-9B7D-4F1E-BD83-2512085BE83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B188A98-9B7D-4F1E-BD83-2512085BE83E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
