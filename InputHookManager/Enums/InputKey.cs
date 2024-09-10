@@ -1,6 +1,6 @@
 ﻿namespace InputHookManager.Enums
 {
-    public enum KeyInput
+    public enum InputKey
     {
         KeyCode = 65535, // 0x0000FFFF
         Modifiers = -65536, // 0xFFFF0000

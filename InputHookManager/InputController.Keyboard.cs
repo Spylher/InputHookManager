@@ -16,7 +16,7 @@ namespace InputHookManager
                 return CallNextHookEx(KeyboardId, nCode, wParam, lParam);
 
             var vkCode = Marshal.ReadInt32(lParam);
-            var keyCode = (KeyInput)vkCode;
+            var keyCode = (InputKey)vkCode;
             UpdateKeyPressed(keyCode);
 
             bool isKeyDown = wParam == (IntPtr)WinMessages.WM_KEYDOWN || wParam == (IntPtr)WinMessages.WM_SYSKEYDOWN;
@@ -29,7 +29,8 @@ namespace InputHookManager
                 actionResult = HandleKeyAction(KeyMappingsPressed);
 
                 //suppress_invoke_action_release
-                if (KeyMappingsReleased.ContainsKey(KeyPressed) && (WinUtils.IsActiveWindow(Hwnd) || AllowedKeys.Contains(KeyPressed)))
+                if (KeyMappingsReleased.ContainsKey(KeyPressed) && 
+                    (WinUtils.IsActiveWindow(Hwnd) || Hwnd == 0 || AllowedKeys.Contains(KeyPressed)))
                     actionResult = true;
             }
             else if (isKeyUp)
@@ -66,7 +67,7 @@ namespace InputHookManager
             return false;
         }
 
-        private void UpdateKeyPressed(KeyInput keyCode)
+        private void UpdateKeyPressed(InputKey keyCode)
         {
             if (IsControlKey(keyCode))
                 KeyPressed.CtrlKeyPressed = true;
@@ -75,22 +76,27 @@ namespace InputHookManager
             else if (IsAltKey(keyCode))
                 KeyPressed.AltKeyPressed = true;
             else
+            {
                 KeyPressed.MainKey = keyCode;
+                return;
+            }
+
+            //KeyPressed.MainKey = InputKey.None;
         }
 
-        private bool IsControlKey(KeyInput keyCode)
+        private bool IsControlKey(InputKey keyCode)
         {
-            return (keyCode == KeyInput.LControlKey || keyCode == KeyInput.RControlKey || keyCode == KeyInput.ControlKey || keyCode == KeyInput.Control);
+            return (keyCode == InputKey.LControlKey || keyCode == InputKey.RControlKey || keyCode == InputKey.ControlKey || keyCode == InputKey.Control);
         }
 
-        private bool IsShiftKey(KeyInput keyCode)
+        private bool IsShiftKey(InputKey keyCode)
         {
-            return (keyCode == KeyInput.LShiftKey || keyCode == KeyInput.RShiftKey || keyCode == KeyInput.ShiftKey || keyCode == KeyInput.Shift);
+            return (keyCode == InputKey.LShiftKey || keyCode == InputKey.RShiftKey || keyCode == InputKey.ShiftKey || keyCode == InputKey.Shift);
         }
 
-        private bool IsAltKey(KeyInput keyCode)
+        private bool IsAltKey(InputKey keyCode)
         {
-            return (keyCode == KeyInput.LMenu || keyCode == KeyInput.RMenu || keyCode == KeyInput.Menu || keyCode == KeyInput.Alt);
+            return (keyCode == InputKey.LMenu || keyCode == InputKey.RMenu || keyCode == InputKey.Menu || keyCode == InputKey.Alt);
         }
 
     }

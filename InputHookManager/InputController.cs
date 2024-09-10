@@ -10,7 +10,7 @@ namespace InputHookManager
         public IntPtr Hwnd { get; set; } = IntPtr.Zero;
         public Dictionary<HotKey, Action<Object>> KeyMappingsPressed = [];
         public Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
-        public Dictionary<KeyInput, bool> KeyState = [];
+        public Dictionary<InputKey, bool> KeyState = [];
 
         private List<HotKey> AllowedKeys = [];
         private List<HotKey> SuppressedKeys = [];
@@ -18,23 +18,45 @@ namespace InputHookManager
 
         public InputController()
         {
-            //keyboard
-            KeyboardProc = KeyboardHookCallback;
-            KeyboardId = SetKeyboardHook(KeyboardProc);
+            Task.Run(() =>
+            {
+                //keyboard
+                KeyboardProc = KeyboardHookCallback;
+                KeyboardId = SetKeyboardHook(KeyboardProc);
 
-            //mouse
-            MouseProc = MouseHookCallback;
-            MouseHookId = SetMouseHook(MouseProc);
+                //mouse
+                //MouseProc = MouseHookCallback;
+                //MouseHookId = SetMouseHook(MouseProc);
 
-            //Enable();
-            foreach (KeyInput key in Enum.GetValues(typeof(KeyInput)))
-                KeyState[key] = false;
+                //Enable();
+                foreach (InputKey key in Enum.GetValues(typeof(InputKey)))
+                    KeyState[key] = false;
+
+                CaptureMessages();
+            });
         }
 
-        public void Attach(int pid) => Hwnd = Process.GetProcessById(pid).MainWindowHandle;
+        public void CaptureMessages()
+        {
+            while (GetMessage(out WinUtils.MESSAGE msg, IntPtr.Zero, 0, 0))
+            {
 
-        public void Attach(Process process) => Hwnd = process.MainWindowHandle;
-        
+            }
+        }
+
+        public bool Attach(int pid) => Attach(Process.GetProcessById(pid));
+
+        public bool Attach(Process process)
+        {
+            if (process.MainWindowHandle != 0)
+            {
+                Hwnd = process.MainWindowHandle;
+                return true;
+            }
+
+            return false;
+        }
+
         public void Attach(IntPtr hwnd) => Hwnd = hwnd;
 
         public void RegisterAction(HotKey hotkey, Action<Object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Default, KeyState keyState = Enums.KeyState.Released)
@@ -79,7 +101,7 @@ namespace InputHookManager
             KeyMappingsReleased.Clear();
         }
 
-        public bool IsKeyDown(KeyInput key) => KeyState[key];
+        public bool IsKeyDown(InputKey key) => KeyState[key];
 
         private IntPtr SetKeyboardHook(LowLevelKeyboardProc proc)
         {
@@ -104,6 +126,9 @@ namespace InputHookManager
             UnhookWindowsHookEx(KeyboardId);
             UnhookWindowsHookEx(MouseHookId);
         }
+
+        [DllImport("user32.dll")]
+        public static extern bool GetMessage(out WinUtils.MESSAGE lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);

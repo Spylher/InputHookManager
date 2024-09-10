@@ -7,9 +7,9 @@ namespace InputHookManager.Utils
         public bool CtrlKeyPressed { get; set; }
         public bool ShiftKeyPressed { get; set; }
         public bool AltKeyPressed { get; set; }
-        public KeyInput MainKey { get; set; } = KeyInput.None;
+        public InputKey MainKey { get; set; } = InputKey.None;
 
-        public HotKey(KeyInput mainKey = KeyInput.None, bool ctrlKeyPressed = false, bool shiftKeyPressed = false, bool altKeyPressed = false)
+        public HotKey(InputKey mainKey = InputKey.None, bool ctrlKeyPressed = false, bool shiftKeyPressed = false, bool altKeyPressed = false)
         {
             CtrlKeyPressed = ctrlKeyPressed;
             ShiftKeyPressed = shiftKeyPressed;
@@ -37,7 +37,7 @@ namespace InputHookManager.Utils
                 text = text.Replace("Alt+", "");
             }
 
-            MainKey = (KeyInput)Enum.Parse(typeof(KeyInput), text, true);
+            MainKey = (InputKey)Enum.Parse(typeof(InputKey), text, true);
         }
 
         public void Clear()
@@ -45,12 +45,12 @@ namespace InputHookManager.Utils
             CtrlKeyPressed = false;
             AltKeyPressed = false;
             ShiftKeyPressed = false;
-            MainKey = KeyInput.None;
+            MainKey = InputKey.None;
         }
 
         public override string ToString()
         {
-            var invalidKeys = new List<KeyInput> { KeyInput.Back, KeyInput.Space, KeyInput.Capital, KeyInput.LWin, KeyInput.RWin, KeyInput.Escape, KeyInput.Delete, KeyInput.None };
+            var invalidKeys = new List<InputKey> { InputKey.Back, InputKey.Space, InputKey.Capital, InputKey.LWin, InputKey.RWin, InputKey.Escape, InputKey.Delete, InputKey.None };
             var shortcut = string.Empty;
 
             if (CtrlKeyPressed && ShiftKeyPressed)

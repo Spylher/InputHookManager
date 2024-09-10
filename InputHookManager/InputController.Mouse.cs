@@ -17,9 +17,9 @@ namespace InputHookManager
             int buttonValue = (int)((hookStruct.mouseData >> 16) & 0xFFFF);
 
             if (buttonValue == 1)
-                KeyPressed.MainKey = KeyInput.XButton1;
+                KeyPressed.MainKey = InputKey.XButton1;
             else
-                KeyPressed.MainKey = KeyInput.XButton2;
+                KeyPressed.MainKey = InputKey.XButton2;
 
 
             if (nCode >= 0 && (wParam == (IntPtr)WM_LBUTTONDOWN || wParam == (IntPtr)WM_RBUTTONDOWN || wParam == (IntPtr)WM_XBUTTONDOWN))
