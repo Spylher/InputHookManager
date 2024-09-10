@@ -1,6 +1,7 @@
 ﻿using InputHookManager.Enums;
 using InputHookManager.Utils;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace InputHookManager
 {
@@ -29,7 +30,7 @@ namespace InputHookManager
                 actionResult = HandleKeyAction(KeyMappingsPressed);
 
                 //suppress_invoke_action_release
-                if (KeyMappingsReleased.ContainsKey(KeyPressed) && 
+                if (KeyMappingsReleased.ContainsKey(KeyPressed) &&
                     (WinUtils.IsActiveWindow(Hwnd) || Hwnd == 0 || AllowedKeys.Contains(KeyPressed)))
                     actionResult = true;
             }
@@ -69,34 +70,20 @@ namespace InputHookManager
 
         private void UpdateKeyPressed(InputKey keyCode)
         {
-            if (IsControlKey(keyCode))
+            if (HotKey.IsControlKey(keyCode))
                 KeyPressed.CtrlKeyPressed = true;
-            else if (IsShiftKey(keyCode))
+            else if (HotKey.IsShiftKey(keyCode))
                 KeyPressed.ShiftKeyPressed = true;
-            else if (IsAltKey(keyCode))
+            else if (HotKey.IsAltKey(keyCode))
                 KeyPressed.AltKeyPressed = true;
             else
             {
                 KeyPressed.MainKey = keyCode;
                 return;
             }
+            //KeyPressed.MainKey = keyCode;
 
-            //KeyPressed.MainKey = InputKey.None;
-        }
-
-        private bool IsControlKey(InputKey keyCode)
-        {
-            return (keyCode == InputKey.LControlKey || keyCode == InputKey.RControlKey || keyCode == InputKey.ControlKey || keyCode == InputKey.Control);
-        }
-
-        private bool IsShiftKey(InputKey keyCode)
-        {
-            return (keyCode == InputKey.LShiftKey || keyCode == InputKey.RShiftKey || keyCode == InputKey.ShiftKey || keyCode == InputKey.Shift);
-        }
-
-        private bool IsAltKey(InputKey keyCode)
-        {
-            return (keyCode == InputKey.LMenu || keyCode == InputKey.RMenu || keyCode == InputKey.Menu || keyCode == InputKey.Alt);
+            KeyPressed.MainKey = InputKey.None;
         }
 
     }

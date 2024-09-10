@@ -1,4 +1,5 @@
 ﻿using InputHookManager.Enums;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace InputHookManager.Utils
 {
@@ -9,12 +10,26 @@ namespace InputHookManager.Utils
         public bool AltKeyPressed { get; set; }
         public InputKey MainKey { get; set; } = InputKey.None;
 
+        public List<InputKey> InvalidKeys { get; set; } =
+        [
+            InputKey.Back, InputKey.Space, InputKey.Capital, InputKey.LWin, InputKey.RWin, InputKey.Escape,
+            InputKey.Delete, InputKey.Return, InputKey.Enter, InputKey.Pause,
+        ];
+
         public HotKey(InputKey mainKey = InputKey.None, bool ctrlKeyPressed = false, bool shiftKeyPressed = false, bool altKeyPressed = false)
         {
             CtrlKeyPressed = ctrlKeyPressed;
             ShiftKeyPressed = shiftKeyPressed;
             AltKeyPressed = altKeyPressed;
-            MainKey = mainKey;
+
+            if (IsControlKey(mainKey))
+                CtrlKeyPressed = true;
+            else if (IsShiftKey(mainKey))
+                ShiftKeyPressed = true;
+            else if (IsAltKey(mainKey))
+                AltKeyPressed = true;
+            else
+                MainKey = mainKey;
         }
 
         public HotKey(string text)
@@ -50,7 +65,6 @@ namespace InputHookManager.Utils
 
         public override string ToString()
         {
-            var invalidKeys = new List<InputKey> { InputKey.Back, InputKey.Space, InputKey.Capital, InputKey.LWin, InputKey.RWin, InputKey.Escape, InputKey.Delete, InputKey.None };
             var shortcut = string.Empty;
 
             if (CtrlKeyPressed && ShiftKeyPressed)
@@ -65,15 +79,18 @@ namespace InputHookManager.Utils
                 shortcut += "Shift+";
             else if (AltKeyPressed)
                 shortcut += "Alt+";
-            if (invalidKeys.Contains(MainKey))
-                shortcut = "None";
+
+            if (MainKey == InputKey.None)
+                shortcut = shortcut[..^1];
+            else if (InvalidKeys.Contains(MainKey))
+                shortcut = MainKey.ToString();
             else
                 shortcut += MainKey.ToString();
 
             return shortcut;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is HotKey otherHk)
                 return GetHashCode() == otherHk.GetHashCode();
@@ -81,14 +98,23 @@ namespace InputHookManager.Utils
             return false;
         }
 
-        public override int GetHashCode()
+        internal static bool IsControlKey(InputKey keyCode)
         {
-            return ToString().GetHashCode();
+            return (keyCode == InputKey.LControlKey || keyCode == InputKey.RControlKey || keyCode == InputKey.ControlKey || keyCode == InputKey.Control);
         }
 
-        public static implicit operator string(HotKey hotKey)
+        internal static bool IsShiftKey(InputKey keyCode)
         {
-            return hotKey?.ToString();
+            return (keyCode == InputKey.LShiftKey || keyCode == InputKey.RShiftKey || keyCode == InputKey.ShiftKey || keyCode == InputKey.Shift);
         }
+
+        internal static bool IsAltKey(InputKey keyCode)
+        {
+            return (keyCode == InputKey.LMenu || keyCode == InputKey.RMenu || keyCode == InputKey.Menu || keyCode == InputKey.Alt);
+        }
+
+        public override int GetHashCode() => HashCode.Combine(MainKey, CtrlKeyPressed, ShiftKeyPressed, AltKeyPressed);
+
+        public static implicit operator string(HotKey hotKey) => hotKey.ToString();
     }
 }

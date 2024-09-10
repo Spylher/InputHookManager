@@ -14,10 +14,10 @@ namespace ConsoleApp1
             inputController.RegisterAction(new HotKey(InputKey.A), (_) => Console.WriteLine("DALE"), true);
 
             foreach (InputKey key in Enum.GetValues(typeof(InputKey)))
-                inputController.RegisterAction(new HotKey(key), (_) => Console.WriteLine(key), true);
+                inputController.RegisterAction(new HotKey(key), (_) => Console.WriteLine(new HotKey(key)), true);
+            
             
             inputController.RegisterAction(new HotKey("C"), (_) => Console.Clear(), true);
-
             Console.WriteLine("Press any key to exit");
             Console.ReadLine();
         }
