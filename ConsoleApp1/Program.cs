@@ -8,7 +8,7 @@ namespace ConsoleApp1
 {
     internal class Program
     {
-        static void Main()
+        static void Main()   
         {
             InputController inputController = new();
             inputController.RegisterAction(new HotKey(InputKey.A), (_) => Console.WriteLine("DALE"), true);

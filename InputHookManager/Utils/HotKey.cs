@@ -1,5 +1,4 @@
 ﻿using InputHookManager.Enums;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace InputHookManager.Utils
 {
@@ -98,19 +97,24 @@ namespace InputHookManager.Utils
             return false;
         }
 
+        internal static bool IsCommandKey(InputKey keyCode) => (IsControlKey(keyCode) || IsShiftKey(keyCode) || IsAltKey(keyCode));
+
         internal static bool IsControlKey(InputKey keyCode)
         {
-            return (keyCode == InputKey.LControlKey || keyCode == InputKey.RControlKey || keyCode == InputKey.ControlKey || keyCode == InputKey.Control);
+            return (keyCode == InputKey.LControlKey || keyCode == InputKey.RControlKey || 
+                    keyCode == InputKey.ControlKey || keyCode == InputKey.Control);
         }
 
         internal static bool IsShiftKey(InputKey keyCode)
         {
-            return (keyCode == InputKey.LShiftKey || keyCode == InputKey.RShiftKey || keyCode == InputKey.ShiftKey || keyCode == InputKey.Shift);
+            return (keyCode == InputKey.LShiftKey || keyCode == InputKey.RShiftKey || 
+                    keyCode == InputKey.ShiftKey || keyCode == InputKey.Shift);
         }
 
         internal static bool IsAltKey(InputKey keyCode)
         {
-            return (keyCode == InputKey.LMenu || keyCode == InputKey.RMenu || keyCode == InputKey.Menu || keyCode == InputKey.Alt);
+            return (keyCode == InputKey.LMenu || keyCode == InputKey.RMenu || 
+                    keyCode == InputKey.Menu || keyCode == InputKey.Alt);
         }
 
         public override int GetHashCode() => HashCode.Combine(MainKey, CtrlKeyPressed, ShiftKeyPressed, AltKeyPressed);

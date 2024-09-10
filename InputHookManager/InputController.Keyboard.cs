@@ -41,8 +41,9 @@ namespace InputHookManager
                 KeyPressed.Clear();
             }
 
-            if (actionResult && SuppressedKeys.Contains(KeyPressed))
+            if (actionResult && SuppressedKeys.Contains(KeyPressed) && !HotKey.IsCommandKey(keyCode))
                 return 1;
+
             return CallNextHookEx(KeyboardId, nCode, wParam, lParam);
         }
 
