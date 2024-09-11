@@ -1,7 +1,6 @@
 ﻿using InputHookManager.Enums;
 using InputHookManager.Utils;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace InputHookManager
 {
@@ -18,7 +17,7 @@ namespace InputHookManager
 
             var vkCode = Marshal.ReadInt32(lParam);
             var keyCode = (InputKey)vkCode;
-            UpdateKeyPressed(keyCode);
+            UpdateKeyboardPressed(keyCode);
 
             bool isKeyDown = wParam == (IntPtr)WinMessages.WM_KEYDOWN || wParam == (IntPtr)WinMessages.WM_SYSKEYDOWN;
             bool isKeyUp = wParam == (IntPtr)WinMessages.WM_KEYUP || wParam == (IntPtr)WinMessages.WM_SYSKEYUP;
@@ -30,8 +29,7 @@ namespace InputHookManager
                 actionResult = HandleKeyAction(KeyMappingsPressed);
 
                 //suppress_invoke_action_release
-                if (KeyMappingsReleased.ContainsKey(KeyPressed) &&
-                    (WinUtils.IsActiveWindow(Hwnd) || Hwnd == 0 || AllowedKeys.Contains(KeyPressed)))
+                if (KeyMappingsReleased.ContainsKey(KeyPressed) && (WinUtils.IsActiveWindow(Hwnd) || Hwnd == 0 || AllowedKeys.Contains(KeyPressed)))
                     actionResult = true;
             }
             else if (isKeyUp)
@@ -55,12 +53,12 @@ namespace InputHookManager
                 {
                     if (AllowedKeys.Contains(KeyPressed) || Hwnd == 0)
                     {
-                        hotKeyAction.Value.Invoke(KeyPressed.MainKey);
+                        hotKeyAction.Value.Invoke(KeyPressed);
                         return true;
                     }
                     if (WinUtils.IsActiveWindow(Hwnd))
                     {
-                        hotKeyAction.Value.Invoke(KeyPressed.MainKey);
+                        hotKeyAction.Value.Invoke(KeyPressed);
                         return true;
                     }
                 }
@@ -69,7 +67,7 @@ namespace InputHookManager
             return false;
         }
 
-        private void UpdateKeyPressed(InputKey keyCode)
+        private void UpdateKeyboardPressed(InputKey keyCode)
         {
             if (HotKey.IsControlKey(keyCode))
                 KeyPressed.CtrlKeyPressed = true;
@@ -82,7 +80,6 @@ namespace InputHookManager
                 KeyPressed.MainKey = keyCode;
                 return;
             }
-            //KeyPressed.MainKey = keyCode;
 
             KeyPressed.MainKey = InputKey.None;
         }

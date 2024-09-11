@@ -7,14 +7,13 @@ namespace InputHookManager
 {
     public partial class InputController : IDisposable
     {
-        public IntPtr Hwnd { get; set; } = IntPtr.Zero;
-        public Dictionary<HotKey, Action<Object>> KeyMappingsPressed = [];
-        public Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
-        public Dictionary<InputKey, bool> KeyState = [];
-
+        private IntPtr Hwnd { get; set; } = IntPtr.Zero;
+        private Dictionary<HotKey, Action<Object>> KeyMappingsPressed = [];
+        private Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
+        private Dictionary<InputKey, bool> KeyState = [];
         private List<HotKey> AllowedKeys = [];
         private List<HotKey> SuppressedKeys = [];
-        public HotKey KeyPressed = new();
+        private HotKey KeyPressed = new();
 
         public InputController()
         {
@@ -25,8 +24,8 @@ namespace InputHookManager
                 KeyboardId = SetKeyboardHook(KeyboardProc);
 
                 //mouse
-                //MouseProc = MouseHookCallback;
-                //MouseHookId = SetMouseHook(MouseProc);
+                MouseProc = MouseHookCallback;
+                MouseHookId = SetMouseHook(MouseProc);
 
                 //Enable();
                 foreach (InputKey key in Enum.GetValues(typeof(InputKey)))
@@ -40,7 +39,7 @@ namespace InputHookManager
         {
             while (GetMessage(out WinUtils.MESSAGE msg, IntPtr.Zero, 0, 0))
             {
-
+                //Thread.Sleep(1);
             }
         }
 
@@ -61,16 +60,21 @@ namespace InputHookManager
 
         public void RegisterAction(HotKey hotkey, Action<Object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Default, KeyState keyState = Enums.KeyState.Released)
         {
-            UnregisterAction(hotkey, Enums.KeyState.Pressed);
-            UnregisterAction(hotkey);
-
-            if (actionMode == ActionMode.Global) AllowedKeys.Add(hotkey);
-            if (suppressDefault) SuppressedKeys.Add(hotkey);
-
             if (keyState == Enums.KeyState.Pressed)
+            {
+                UnregisterAction(hotkey, Enums.KeyState.Pressed);
                 KeyMappingsPressed.Add(hotkey, act);
+            }
             else if (keyState == Enums.KeyState.Released)
+            {
+                UnregisterAction(hotkey);
                 KeyMappingsReleased.Add(hotkey, act);
+            }
+
+            if (actionMode == ActionMode.Global)
+                AllowedKeys.Add(hotkey);
+            if (suppressDefault)
+                SuppressedKeys.Add(hotkey);
         }
 
         public void UnregisterAction(HotKey hotkey, KeyState keyState = Enums.KeyState.Released)
@@ -112,11 +116,9 @@ namespace InputHookManager
 
         private IntPtr SetMouseHook(LowLevelMouseProc proc)
         {
-            using (Process curProcess = Process.GetCurrentProcess())
-            using (ProcessModule curModule = curProcess.MainModule!)
-            {
-                return SetWindowsHookEx((int)WinMessages.WH_MOUSE_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
-            }
+            using Process curProcess = Process.GetCurrentProcess();
+            using ProcessModule curModule = curProcess.MainModule!;
+            return SetWindowsHookEx((int)WinMessages.WH_MOUSE_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
         }
 
         public void Dispose()
@@ -127,8 +129,6 @@ namespace InputHookManager
             UnhookWindowsHookEx(MouseHookId);
         }
 
-        [DllImport("user32.dll")]
-        public static extern bool GetMessage(out WinUtils.MESSAGE lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
@@ -139,6 +139,9 @@ namespace InputHookManager
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetMessage(out WinUtils.MESSAGE lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
