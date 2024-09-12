@@ -2,17 +2,15 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <StartupObject>ConsoleApp1.Program</StartupObject>
-    <UseWindowsForms>False</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InputHookManager\InputHookManager.csproj" />
+    <ProjectReference Include="..\..\InputHookManager\InputHookManager.csproj" />
   </ItemGroup>
 
 </Project>

@@ -66,15 +66,8 @@
 
     public enum ActionMode
     {
-        Default,
+        Windowed,
         Global
-    }
-
-    public enum WindowStateType
-    {
-        Borderless,
-        Fullscreen,
-        Borders
     }
 
     public enum KeyState

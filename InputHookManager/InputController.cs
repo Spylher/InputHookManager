@@ -12,7 +12,7 @@ namespace InputHookManager
         private Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
         private Dictionary<InputKey, bool> KeyState = [];
         private List<HotKey> AllowedKeys = [];
-        private List<HotKey> SuppressedKeys = [];
+        public List<HotKey> SuppressedKeys = [];
         private HotKey KeyPressed = new();
 
         public InputController()
@@ -58,7 +58,7 @@ namespace InputHookManager
 
         public void Attach(IntPtr hwnd) => Hwnd = hwnd;
 
-        public void RegisterAction(HotKey hotkey, Action<Object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Default, KeyState keyState = Enums.KeyState.Released)
+        public void RegisterAction(HotKey hotkey, Action<object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Windowed, KeyState keyState = Enums.KeyState.Released)
         {
             if (keyState == Enums.KeyState.Pressed)
             {
