@@ -54,16 +54,6 @@
         XBUTTON2 = 6,
     }
 
-    public enum WinCommand
-    {
-        //window
-        Hide = 0,
-        ShowNormal = 1,
-        ShowMinimized = 2,
-        ShowMaximized = 3,
-        Restore = 9
-    }
-
     public enum ActionMode
     {
         Windowed,

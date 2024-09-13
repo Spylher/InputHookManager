@@ -9,7 +9,7 @@ namespace InputHookManager
     public partial class InputController
     {
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
-        private LowLevelMouseProc MouseProc;
+        private LowLevelMouseProc MouseProc = default!;
         private IntPtr MouseHookId = IntPtr.Zero;
 
         private IntPtr MouseHookCallback(int nCode, IntPtr wParam, IntPtr lParam)

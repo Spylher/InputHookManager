@@ -1,4 +1,4 @@
-namespace InputHookManager.Forms
+namespace WindowShortcutSample
 {
     internal static class Program
     {

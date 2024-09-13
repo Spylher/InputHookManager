@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace InputHookManager.Tests
 {
@@ -16,7 +11,7 @@ namespace InputHookManager.Tests
 
             try
             {
-                inputController.Attach(12312412);
+                inputController.Attach(1122344566);
             }
             catch (Exception)
             {

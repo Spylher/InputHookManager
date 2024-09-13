@@ -5,11 +5,11 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHookManager", "InputHookManager\InputHookManager.csproj", "{FFED60C3-F033-41F7-882C-65CE53EC7796}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHookManager.Forms", "InputHookManager.Forms\InputHookManager.Forms.csproj", "{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputHookManager.Tests", "InputHookManager.Tests\InputHookManager.Tests.csproj", "{0B188A98-9B7D-4F1E-BD83-2512085BE83E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputWatcher", "examples\InputWatcher\InputWatcher.csproj", "{065C6235-7080-43C1-9355-90F6EC80552B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InputWatcherSample", "samples\InputWatcherSample\InputWatcherSample.csproj", "{3AA80CB2-A991-443E-9E82-C29E1CA42114}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowShortcutsSample", "samples\WindowShortcutsSample\WindowShortcutsSample.csproj", "{6126AC8A-761E-4F98-BD32-A28D89FE0F21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,18 +21,18 @@ Global
 		{FFED60C3-F033-41F7-882C-65CE53EC7796}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFED60C3-F033-41F7-882C-65CE53EC7796}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFED60C3-F033-41F7-882C-65CE53EC7796}.Release|Any CPU.Build.0 = Release|Any CPU
-		{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{907E6D6C-9F4A-4E6B-8636-952ED2D3569C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B188A98-9B7D-4F1E-BD83-2512085BE83E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B188A98-9B7D-4F1E-BD83-2512085BE83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B188A98-9B7D-4F1E-BD83-2512085BE83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B188A98-9B7D-4F1E-BD83-2512085BE83E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{065C6235-7080-43C1-9355-90F6EC80552B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{065C6235-7080-43C1-9355-90F6EC80552B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{065C6235-7080-43C1-9355-90F6EC80552B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{065C6235-7080-43C1-9355-90F6EC80552B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AA80CB2-A991-443E-9E82-C29E1CA42114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AA80CB2-A991-443E-9E82-C29E1CA42114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AA80CB2-A991-443E-9E82-C29E1CA42114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AA80CB2-A991-443E-9E82-C29E1CA42114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6126AC8A-761E-4F98-BD32-A28D89FE0F21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6126AC8A-761E-4F98-BD32-A28D89FE0F21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6126AC8A-761E-4F98-BD32-A28D89FE0F21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6126AC8A-761E-4F98-BD32-A28D89FE0F21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

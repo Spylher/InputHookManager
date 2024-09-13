@@ -12,34 +12,50 @@ namespace InputHookManager
         private Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
         private Dictionary<InputKey, bool> KeyState = [];
         private List<HotKey> AllowedKeys = [];
-        public List<HotKey> SuppressedKeys = [];
+        private List<HotKey> SuppressedKeys = [];
         private HotKey KeyPressed = new();
+        private bool IsHookActive;
 
-        public InputController()
+        public InputController(bool runInSeparateThread = true)
         {
-            Task.Run(() =>
-            {
-                //keyboard
-                KeyboardProc = KeyboardHookCallback;
-                KeyboardId = SetKeyboardHook(KeyboardProc);
-
-                //mouse
-                MouseProc = MouseHookCallback;
-                MouseHookId = SetMouseHook(MouseProc);
-
-                //Enable();
-                foreach (InputKey key in Enum.GetValues(typeof(InputKey)))
-                    KeyState[key] = false;
-
-                CaptureMessages();
-            });
+            if (runInSeparateThread)
+                Task.Run(() =>
+                {
+                    InitializeHooks();
+                    CaptureMessages();
+                });
+            else
+                InitializeHooks();
         }
+
+        private void InitializeHooks()
+        {
+            //keyboard
+            KeyboardProc = KeyboardHookCallback;
+            KeyboardId = SetKeyboardHook(KeyboardProc);
+
+            //mouse
+            MouseProc = MouseHookCallback;
+            MouseHookId = SetMouseHook(MouseProc);
+
+            Enable();
+        }
+
+        public void Enable()
+        {
+            IsHookActive = true;
+
+            foreach (InputKey key in Enum.GetValues(typeof(InputKey)))
+                KeyState[key] = false;
+        }
+
+        public void Disable() => IsHookActive = false;
 
         public void CaptureMessages()
         {
-            while (GetMessage(out WinUtils.MESSAGE msg, IntPtr.Zero, 0, 0))
+            while (GetMessage(out WinUtils.MESSAGE _, IntPtr.Zero, 0, 0))
             {
-                //Thread.Sleep(1);
+                Thread.Sleep(1);
             }
         }
 
@@ -56,19 +72,26 @@ namespace InputHookManager
             return false;
         }
 
-        public void Attach(IntPtr hwnd) => Hwnd = hwnd;
-
-        public void RegisterAction(HotKey hotkey, Action<object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Windowed, KeyState keyState = Enums.KeyState.Released)
+        public bool Attach(IntPtr hwnd)
         {
-            if (keyState == Enums.KeyState.Pressed)
+            if (hwnd == 0)
+                return false;
+            
+            Hwnd = hwnd;
+            return true;
+        }
+
+        public void RegisterAction(HotKey hotkey, Action<object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Windowed, KeyState keyState = Enums.KeyState.Pressed)
+        {
+            if (keyState == Enums.KeyState.Released)
             {
-                UnregisterAction(hotkey, Enums.KeyState.Pressed);
-                KeyMappingsPressed.Add(hotkey, act);
+                UnregisterAction(hotkey, Enums.KeyState.Released);
+                KeyMappingsReleased.Add(hotkey, act);
             }
-            else if (keyState == Enums.KeyState.Released)
+            else
             {
                 UnregisterAction(hotkey);
-                KeyMappingsReleased.Add(hotkey, act);
+                KeyMappingsPressed.Add(hotkey, act);
             }
 
             if (actionMode == ActionMode.Global)
@@ -77,23 +100,23 @@ namespace InputHookManager
                 SuppressedKeys.Add(hotkey);
         }
 
-        public void UnregisterAction(HotKey hotkey, KeyState keyState = Enums.KeyState.Released)
+        public void UnregisterAction(HotKey hotkey, KeyState keyState = Enums.KeyState.Pressed)
         {
-            if (AllowedKeys.Contains(hotkey)) AllowedKeys.Remove(hotkey);
-            if (SuppressedKeys.Contains(hotkey)) SuppressedKeys.Remove(hotkey);
+            if (AllowedKeys.Contains(hotkey))
+                AllowedKeys.Remove(hotkey);
 
-            if (keyState == Enums.KeyState.Pressed)
+            if (SuppressedKeys.Contains(hotkey))
+                SuppressedKeys.Remove(hotkey);
+
+            if (keyState == Enums.KeyState.Released)
             {
-                foreach (var keyValuePair in KeyMappingsPressed)
-                    if (keyValuePair.Key.Equals(hotkey))
-                        KeyMappingsPressed.Remove(hotkey);
-
+                if (KeyMappingsReleased.ContainsKey(hotkey))
+                    KeyMappingsReleased.Remove(hotkey);
             }
-            else if (keyState == Enums.KeyState.Released)
+            else
             {
-                foreach (var keyValuePair in KeyMappingsReleased)
-                    if (keyValuePair.Key.Equals(hotkey))
-                        KeyMappingsReleased.Remove(hotkey);
+                if (KeyMappingsPressed.ContainsKey(hotkey))
+                    KeyMappingsPressed.Remove(hotkey);
             }
         }
 
@@ -123,8 +146,8 @@ namespace InputHookManager
 
         public void Dispose()
         {
+            Disable();
             ClearActions();
-            //Disable();
             UnhookWindowsHookEx(KeyboardId);
             UnhookWindowsHookEx(MouseHookId);
         }
@@ -141,7 +164,7 @@ namespace InputHookManager
         private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
         [DllImport("user32.dll")]
-        public static extern bool GetMessage(out WinUtils.MESSAGE lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+        private static extern bool GetMessage(out WinUtils.MESSAGE lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
