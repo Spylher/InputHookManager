@@ -7,15 +7,19 @@ namespace InputHookManager
 {
     public partial class InputController : IDisposable
     {
-        private IntPtr Hwnd { get; set; } = IntPtr.Zero;
-        private Dictionary<HotKey, Action<Object>> KeyMappingsPressed = [];
-        private Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
-        private Dictionary<InputKey, bool> KeyState = [];
-        private List<HotKey> AllowedKeys = [];
-        private List<HotKey> SuppressedKeys = [];
-        private HotKey KeyPressed = new();
-        private bool IsHookActive;
+        internal IntPtr Hwnd { get; set; } = IntPtr.Zero;
+        internal Dictionary<HotKey, Action<Object>> KeyMappingsPressed = [];
+        internal Dictionary<HotKey, Action<Object>> KeyMappingsReleased = [];
+        internal Dictionary<InputKey, bool> KeysState = [];
+        internal List<HotKey> AllowedKeys = [];
+        internal List<HotKey> SuppressedKeys = [];
+        internal HotKey KeyPressed = new();
+        internal bool IsHookActive;
 
+        /// <summary>
+        ///     Initialize a <see cref="InputController"/>.
+        /// </summary>
+        /// <param name="runInSeparateThread"> If <see langword="false"/>, this operation will not run in separate thread</param>.
         public InputController(bool runInSeparateThread = true)
         {
             if (runInSeparateThread)
@@ -41,17 +45,23 @@ namespace InputHookManager
             Enable();
         }
 
+        /// <summary>
+        ///     Enable the hook.
+        /// </summary>
         public void Enable()
         {
             IsHookActive = true;
 
             foreach (InputKey key in Enum.GetValues(typeof(InputKey)))
-                KeyState[key] = false;
+                KeysState[key] = false;
         }
 
+        /// <summary>
+        ///     Disable the hook.
+        /// </summary>
         public void Disable() => IsHookActive = false;
 
-        public void CaptureMessages()
+        private void CaptureMessages()
         {
             while (GetMessage(out WinUtils.MESSAGE _, IntPtr.Zero, 0, 0))
             {
@@ -59,8 +69,16 @@ namespace InputHookManager
             }
         }
 
+        /// <summary>
+        ///    Attach a main window handle by process ID.
+        /// </summary>
+        /// <param name="pid"> Process ID </param >.
         public bool Attach(int pid) => Attach(Process.GetProcessById(pid));
 
+        /// <summary>
+        ///    Attach a main window handle using a <see cref="Process"/>
+        /// </summary>
+        /// <param name="process"> Entity Process </param >
         public bool Attach(Process process)
         {
             if (process.MainWindowHandle != 0)
@@ -72,20 +90,40 @@ namespace InputHookManager
             return false;
         }
 
+        /// <summary>
+        ///   Attach a main window handle by ID.
+        /// </summary>
+        /// <param name="hwnd"> Main window handle ID </param >.
         public bool Attach(IntPtr hwnd)
         {
             if (hwnd == 0)
                 return false;
-            
+
             Hwnd = hwnd;
             return true;
         }
 
-        public void RegisterAction(HotKey hotkey, Action<object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Windowed, KeyState keyState = Enums.KeyState.Pressed)
+        /// <summary>
+        ///     Register the action for the shortcut using a <see cref="HotKey"/>.
+        /// </summary>
+        /// <param name="hotkey"> Shortcut entity </param>.
+        /// <param name="act"> Action to associate a shortcut </param>.
+        /// <param name="suppressDefault"> if <see langword="true"/>, the default action will be suppressed </param>.
+        /// <param name="actionMode">
+        ///     Specifies action mode of shortcut
+        ///     Use <see cref="ActionMode.Global"/> for the action work on a global scope,
+        ///     or <see cref="ActionMode.Windowed"/> to windowed.
+        /// </param>.
+        /// <param name="keyState">
+        ///     Specifies key state to start the action
+        ///     Use <see cref="KeyState.Pressed"/> for the start action while key is pressed,
+        ///     or <see cref="KeyState.Released"/> to the start action when key is released,
+        /// </param>.
+        public void RegisterAction(HotKey hotkey, Action<object> act, bool suppressDefault = false, ActionMode actionMode = ActionMode.Windowed, KeyState keyState = KeyState.Pressed)
         {
-            if (keyState == Enums.KeyState.Released)
+            if (keyState == KeyState.Released)
             {
-                UnregisterAction(hotkey, Enums.KeyState.Released);
+                UnregisterAction(hotkey, KeyState.Released);
                 KeyMappingsReleased.Add(hotkey, act);
             }
             else
@@ -100,7 +138,12 @@ namespace InputHookManager
                 SuppressedKeys.Add(hotkey);
         }
 
-        public void UnregisterAction(HotKey hotkey, KeyState keyState = Enums.KeyState.Pressed)
+        /// <summary>
+        ///     Unregister the action for the shortcut using a <see cref="HotKey"/>.
+        /// </summary>
+        /// <param name="hotkey"> Shortcut entity </param>.
+        /// <param name="keyState"> Specifies key state to remove of the action </param>.
+        public void UnregisterAction(HotKey hotkey, KeyState keyState = KeyState.Pressed)
         {
             if (AllowedKeys.Contains(hotkey))
                 AllowedKeys.Remove(hotkey);
@@ -108,7 +151,7 @@ namespace InputHookManager
             if (SuppressedKeys.Contains(hotkey))
                 SuppressedKeys.Remove(hotkey);
 
-            if (keyState == Enums.KeyState.Released)
+            if (keyState == KeyState.Released)
             {
                 if (KeyMappingsReleased.ContainsKey(hotkey))
                     KeyMappingsReleased.Remove(hotkey);
@@ -120,6 +163,9 @@ namespace InputHookManager
             }
         }
 
+        /// <summary>
+        ///   Clear the actions for the hotkeys.
+        /// </summary>
         public void ClearActions()
         {
             AllowedKeys.Clear();
@@ -128,7 +174,10 @@ namespace InputHookManager
             KeyMappingsReleased.Clear();
         }
 
-        public bool IsKeyDown(InputKey key) => KeyState[key];
+        /// <summary>
+        ///   Verify is key down using a <see cref="InputKey"/>.
+        /// </summary>
+        public bool IsKeyDown(InputKey key) => KeysState[key];
 
         private IntPtr SetKeyboardHook(LowLevelKeyboardProc proc)
         {
@@ -144,6 +193,7 @@ namespace InputHookManager
             return SetWindowsHookEx((int)WinMessages.WH_MOUSE_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             Disable();

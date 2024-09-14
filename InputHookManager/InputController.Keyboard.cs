@@ -6,9 +6,9 @@ namespace InputHookManager
 {
     public partial class InputController
     {
-        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-        private LowLevelKeyboardProc KeyboardProc = default!;
-        private IntPtr KeyboardId = IntPtr.Zero;
+        internal delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+        internal LowLevelKeyboardProc KeyboardProc = default!;
+        internal IntPtr KeyboardId = IntPtr.Zero;
 
         private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
@@ -25,7 +25,7 @@ namespace InputHookManager
 
             if (isKeyDown)
             {
-                KeyState[keyCode] = true;
+                KeysState[keyCode] = true;
                 actionResult = HandleKeyAction(KeyMappingsPressed);
 
                 //suppress_invoke_action_release
@@ -34,7 +34,7 @@ namespace InputHookManager
             }
             else if (isKeyUp)
             {
-                KeyState[keyCode] = false;
+                KeysState[keyCode] = false;
                 actionResult = HandleKeyAction(KeyMappingsReleased);
                 KeyPressed.Clear();
             }

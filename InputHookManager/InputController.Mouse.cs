@@ -8,9 +8,9 @@ namespace InputHookManager
 {
     public partial class InputController
     {
-        private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
-        private LowLevelMouseProc MouseProc = default!;
-        private IntPtr MouseHookId = IntPtr.Zero;
+        internal delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
+        internal LowLevelMouseProc MouseProc = default!;
+        internal IntPtr MouseHookId = IntPtr.Zero;
 
         private IntPtr MouseHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
@@ -27,7 +27,7 @@ namespace InputHookManager
 
             if (isKeyDown)
             {
-                KeyState[KeyPressed.MainKey] = true;
+                KeysState[KeyPressed.MainKey] = true;
                 actionResult = HandleKeyAction(KeyMappingsPressed);
 
                 //suppress_invoke_action_release
@@ -36,7 +36,7 @@ namespace InputHookManager
             }
             else if (isKeyUp)
             {
-                KeyState[KeyPressed.MainKey] = false;
+                KeysState[KeyPressed.MainKey] = false;
                 actionResult = HandleKeyAction(KeyMappingsReleased);
                 KeyPressed.Clear();
             }
