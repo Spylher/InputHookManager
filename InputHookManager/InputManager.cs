@@ -7,11 +7,11 @@ namespace InputHookManager
 {
     public partial class InputManager : IDisposable
     {
-        public static ISimulator Simulator = new WinApi();
-        internal IntPtr Hwnd = IntPtr.Zero;
+        public ISimulator Simulator = new WinApi();
+        public IntPtr Hwnd = IntPtr.Zero;
         internal Dictionary<InputKey[], Action<object>> KeyMappingsPressed = new(new InputKeyArrayComparer());
         internal Dictionary<InputKey[], Action<object>> KeyMappingsReleased = new(new InputKeyArrayComparer());
-        internal static Dictionary<InputKey, bool> KeysState = [];
+        internal static Dictionary<InputKey, bool> KeyStates = [];
         internal HashSet<InputKey[]> GlobalKeys = new(new InputKeyArrayComparer());
         internal HashSet<InputKey[]> SuppressedKeys = new(new InputKeyArrayComparer());
         internal bool IsHookActive = true;
@@ -23,6 +23,8 @@ namespace InputHookManager
         /// .
         public InputManager(ExecutionMode executionMode = ExecutionMode.UserMode)
         {
+            Enable();
+
             if (executionMode == ExecutionMode.KernelMode)
             {
                 Simulator = new DriverApi();
@@ -30,7 +32,7 @@ namespace InputHookManager
                 Interception.CancelableOnKeyDown += KeyboardDriverCallback_OnKeyDown;
                 Interception.CancelableOnKeyUp += KeyboardDriverCallback_OnKeyUp;
                 Interception.CancelableOnMouseMove += OnMouseMove;
-
+                
                 // To do
                 // This is a workaround for the Interception driver to handle mouse movement events.
                 static bool OnMouseMove(int x, int y)
@@ -43,8 +45,6 @@ namespace InputHookManager
             }
             else
                 Task.Run(InitializeHooks);
-
-            Enable();
         }
 
         private void CaptureMessages()
@@ -59,13 +59,18 @@ namespace InputHookManager
         {
             //keyboard
             KeyboardProc = KeyboardHookCallback;
-            KeyboardId = SetKeyboardHook(KeyboardProc);
+            KeyboardHookId = SetKeyboardHook(KeyboardProc);
 
             //mouse
             MouseProc = MouseHookCallback;
             MouseHookId = SetMouseHook(MouseProc);
 
             CaptureMessages();
+        }
+        public void Update(object sender)
+        {
+            var procInfo = (ProcessInfo)sender;
+            Hwnd = procInfo.Handle;
         }
 
         /// <summary>
@@ -76,7 +81,7 @@ namespace InputHookManager
             IsHookActive = true;
 
             foreach (InputKey key in Enum.GetValues(typeof(InputKey)))
-                KeysState[key] = false;
+                KeyStates[key] = false;
         }
 
         /// <summary>
@@ -241,7 +246,7 @@ namespace InputHookManager
         {
             Disable();
             ClearActions();
-            UnhookWindowsHookEx(KeyboardId);
+            UnhookWindowsHookEx(KeyboardHookId);
             UnhookWindowsHookEx(MouseHookId);
             Interception.CancelableOnKeyDown -= KeyboardDriverCallback_OnKeyDown;
             Interception.CancelableOnKeyUp -= KeyboardDriverCallback_OnKeyUp;

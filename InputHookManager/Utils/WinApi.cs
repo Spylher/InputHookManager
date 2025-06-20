@@ -126,8 +126,7 @@ namespace InputHookManager.Utils
             Thread.Sleep(1);
         }
 
-
-        public void MoveMouse(int x, int y, bool relative)
+        public void MoveMouse(int x, int y, bool relative = false)
         {
             if (!relative)
             {
@@ -275,6 +274,8 @@ namespace InputHookManager.Utils
                 KeyUp(inputKey);
         }
 
+        public void SendKey(HotKey key) => SendKey(key.ToInputKey());
+        
         public void SendKey(InputKey key)
         {
             KeyDown(key);

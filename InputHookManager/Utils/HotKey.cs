@@ -65,12 +65,58 @@ public class HotKey
         MainKey = keys.FirstOrDefault(k => !IsCommandKey(k), InputKey.None);
     }
 
+    public static HotKey GetByText(string text)
+    {
+        var hotKey = new HotKey();
+
+        if (text.Contains("Ctrl+"))
+        {
+            hotKey.CtrlKeyPressed = true;
+            text = text.Replace("Ctrl+", "");
+        }
+        if (text.Contains("Shift+"))
+        {
+            hotKey.ShiftKeyPressed = true;
+            text = text.Replace("Shift+", "");
+        }
+        if (text.Contains("Alt+"))
+        {
+            hotKey.AltKeyPressed = true;
+            text = text.Replace("Alt+", "");
+        }
+
+
+        if (!string.IsNullOrEmpty(text))
+        {
+            var key = (InputKey)Enum.Parse(typeof(InputKey), text, true);
+            hotKey.MainKey = key;
+        }
+
+        return hotKey;
+    }
+
     public void Clear()
     {
         CtrlKeyPressed = false;
         AltKeyPressed = false;
         ShiftKeyPressed = false;
         MainKey = InputKey.None;
+    }
+
+    public InputKey[] ToInputKey()
+    {
+        var keys = new List<InputKey>();
+
+        if (CtrlKeyPressed)
+            keys.Add(InputKey.LControl);
+        if (ShiftKeyPressed)
+            keys.Add(InputKey.LShift);
+        if (AltKeyPressed)
+            keys.Add(InputKey.LAlt);
+        if (MainKey != InputKey.None)
+            keys.Add(MainKey);
+
+        return keys.ToArray();
     }
 
     public override string ToString()
@@ -100,22 +146,6 @@ public class HotKey
             shortcut += MainKey.ToString();
 
         return shortcut;
-    }
-
-    public InputKey[] ToInputKey()
-    {
-        var keys = new List<InputKey>();
-
-        if (CtrlKeyPressed)
-            keys.Add(InputKey.LControl);
-        if (ShiftKeyPressed)
-            keys.Add(InputKey.LShift);
-        if (AltKeyPressed)
-            keys.Add(InputKey.LAlt);
-        if (MainKey != InputKey.None)
-            keys.Add(MainKey);
-
-        return keys.ToArray();
     }
 
     public override bool Equals(object? obj)

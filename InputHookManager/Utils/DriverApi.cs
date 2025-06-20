@@ -38,6 +38,8 @@ namespace InputHookManager.Utils
                 KeyUp(inputKey);
         }
 
+        public void SendKey(HotKey key) => SendKey(key.ToInputKey());
+
         public void SendKey(InputKey key)
         {
             if (key < InputKey.None)
@@ -86,7 +88,7 @@ namespace InputHookManager.Utils
 
         public void SendXButton2() => Interception.XButton2();
 
-        public void MoveMouse(int x, int y, bool relative)
+        public void MoveMouse(int x, int y, bool relative = false)
         {
             if (relative)
                 Interception.MoveMouse(x, y);

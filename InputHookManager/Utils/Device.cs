@@ -37,17 +37,17 @@ internal unsafe partial struct Device
     const int FILE_ANY_ACCESS = 0;
     const int METHOD_BUFFERED = 0;
 
-    [LibraryImport("kernel32")] 
+    [DllImport("kernel32")] 
     [return: MarshalAs(UnmanagedType.Bool)] 
-    internal static partial bool DeviceIoControl(nint device, int ioControlCode, void* inBuffer, long inBufferSize, void* outBuffer, long outBufferSize, int* bytesReturned, void* overlapped);
+    internal static extern bool DeviceIoControl(nint device, int ioControlCode, void* inBuffer, long inBufferSize, void* outBuffer, long outBufferSize, int* bytesReturned, void* overlapped);
 
-    [LibraryImport("kernel32")] 
-    internal static partial nint CreateFileA(byte* fileName, int desiredAccess, int shareMode, void* securityAttributes, int creationDisposition, int flags, nint template);
+    [DllImport("kernel32")] 
+    internal static extern nint CreateFileA(byte* fileName, int desiredAccess, int shareMode, void* securityAttributes, int creationDisposition, int flags, nint template);
 
-    [LibraryImport("kernel32")] 
-    internal static partial nint CreateEventA(nint eventAttributes, [MarshalAs(UnmanagedType.Bool)] bool manualReset, [MarshalAs(UnmanagedType.Bool)] bool initialState, byte* name);
+    [DllImport("kernel32")] 
+    internal static extern nint CreateEventA(nint eventAttributes, [MarshalAs(UnmanagedType.Bool)] bool manualReset, [MarshalAs(UnmanagedType.Bool)] bool initialState, byte* name);
 
-    [LibraryImport("kernel32")] 
+    [DllImport("kernel32")] 
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool CloseHandle(nint handle);
+    internal static extern bool CloseHandle(nint handle);
 }

@@ -36,7 +36,7 @@ namespace InputHookManager
 
         //private bool MouseDriverCallback_OnMouseMove(int x, int y)
         //{
-            //KeysState[key] = true; // Update the key state to pressed
+            //KeyStates[key] = true; // Update the key state to pressed
             //KeyActionHandler(KeyMappingsPressed);
 
             //if (SuppressedKeys.Contains(new HotKey(key)))
