@@ -2,12 +2,12 @@
 
 namespace InputHookManager.Tests
 {
-    public class InputControllerTests
+    public class InputManagerTests
     {
         [Fact]
         public void Attach_to_non_existent_process_byId()
         {
-            var inputController = new InputController();
+            var inputController = new InputManager();
 
             try
             {
@@ -24,7 +24,7 @@ namespace InputHookManager.Tests
         [Fact]
         public void Attach_to_non_existent_process()
         {
-            var inputController = new InputController();
+            var inputController = new InputManager();
 
             try
             {

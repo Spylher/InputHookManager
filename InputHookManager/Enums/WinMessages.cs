@@ -5,6 +5,8 @@
         //process
         PROCESS_ALL_ACCESS = 0x1F0FFF,
         PROCESS_VM_READ = 0x0010,
+        PROCESS_QUERY_INFORMATION = 0x0400,
+
 
         //Window Styles
         //GWL_EXSTYLE = -20,
@@ -29,6 +31,7 @@
 
 
         //keyboard
+        INPUT_KEYBOARD = 1,
         WH_KEYBOARD_LL = 13,
         WM_SETCURSOR = 0x0020,
         WM_MOUSEMOVE = 0x0200,
@@ -41,13 +44,25 @@
         WM_NCLBUTTONDOWN = 0xA1,
         WM_SYSKEYDOWN = 0x0104,
         WM_SYSKEYUP = 0x0105,
+        KEYEVENTF_KEYUP = 0x2,
+        KEYEVENTF_SCANCODE = 0x0008,
 
         //mouse
         WH_MOUSE_LL = 14,
+        INPUT_MOUSE = 0,
+        MOUSEEVENTF_MOVE = 0x0001,
+        MOUSEEVENTF_ABSOLUTE = 0x8000,
         MOUSEEVENTF_LEFTDOWN = 0x02,
         MOUSEEVENTF_LEFTUP = 0x04,
         MOUSEEVENTF_RIGHTDOWN = 0x0008,
         MOUSEEVENTF_RIGHTUP = 0x0010,
+        MOUSEEVENTF_MIDDLEDOWN = 0x0020,
+        MOUSEEVENTF_MIDDLEUP = 0x0040,
+        MOUSEEVENTF_XDOWN = 0x0080,
+        MOUSEEVENTF_XUP = 0x0100,
+        MOUSEEVENTF_WHEEL = 0x0800,
+        MOUSEEVENTF_HWHEEL,
+
         WM_XBUTTONDOWN = 0x020B,
         WM_XBUTTONUP = 0x020C,
         XBUTTON1 = 5,
@@ -60,10 +75,11 @@
         Global
     }
 
-    public enum KeyState
+    public enum KeyMode
     {
         Pressed,
         Released
     }
+
 
 }
