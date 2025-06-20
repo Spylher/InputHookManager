@@ -1,7 +1,7 @@
 ﻿using InputHookManager.Utils;
 
 namespace InputHookManager.Models;
-public unsafe struct MouseDriver
+internal unsafe struct MouseDriver
 {
     public Device Device;
 

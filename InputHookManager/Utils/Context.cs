@@ -5,7 +5,7 @@ using InputHookManager.Models;
 
 namespace InputHookManager.Utils;
 
-public unsafe struct Context
+internal unsafe struct Context
 {
     const int MaxKeyboards = 10;
     const int MaxMouses = 10;

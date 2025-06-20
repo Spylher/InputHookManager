@@ -1,7 +1,7 @@
 ﻿using InputHookManager.Utils;
 
 namespace InputHookManager.Models;
-public unsafe struct KeyboardDriver
+internal unsafe struct KeyboardDriver
 {
     public Device Device;
 

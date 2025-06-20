@@ -2,7 +2,7 @@
 
 namespace InputHookManager.Utils
 {
-    public class DriverApi : ISimulator
+    internal class DriverApi : ISimulator
     {
         public void KeyDown(InputKey key)
         {

@@ -3,7 +3,7 @@ using InputHookManager.Enums;
 
 namespace InputHookManager.Models;
 [StructLayout(LayoutKind.Explicit, Size = 0x18)]
-public struct MouseStroke
+internal struct MouseStroke
 {
     [FieldOffset(0x02)] public MouseFlag Flags;
     [FieldOffset(0x04)] public MouseState State;

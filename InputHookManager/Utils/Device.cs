@@ -2,7 +2,7 @@
 using InputHookManager.Enums;
 
 namespace InputHookManager.Utils;
-public unsafe partial struct Device
+internal unsafe partial struct Device
 {
     public nint FileHandle, EventHandle;
 
