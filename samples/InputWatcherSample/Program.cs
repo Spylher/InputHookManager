@@ -36,7 +36,7 @@ namespace InputWatcherSample
             // Registering specific actions for some keys
             inputManager.RegisterAction([InputKey.C], ClearConsole, KeyMode.Released, actionMode: ActionMode.Global);
             inputManager.RegisterAction([InputKey.LControl, InputKey.C], CloseApp, KeyMode.Released, actionMode: ActionMode.Global);
-
+            
             // Wait for the user to press keys
             Console.WriteLine("Input Watcher Sample Application");
             Console.ReadKey();
