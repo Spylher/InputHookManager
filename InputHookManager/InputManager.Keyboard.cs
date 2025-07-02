@@ -41,8 +41,14 @@ public partial class InputManager
                 // Reset the state of the hotkey to avoid strange behavior
                 ChangeKeyState(inputKeys, false);
 
+                // Prevent re-entrance while the action is being processed
+                ActionInProgress = true; 
+
                 // Invoke the action associated with the hotkey
                 action.Invoke(inputKeys);
+
+                // Reset the action in progress state
+                ActionInProgress = false; 
 
                 // Set the state of the hotkey back to pressed
                 ChangeKeyState(inputKeys, true);
@@ -87,6 +93,9 @@ public partial class InputManager
 
     private bool KeyboardDriverCallback_OnKeyDown(InputKey key)
     {
+        if (ActionInProgress)
+            return true; // If an action is already in progress, ignore
+
         KeyStates[key] = true; // Update the key state to pressed
 
         if (KeyActionHandler(KeyMappingsPressed))

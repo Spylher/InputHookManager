@@ -36,21 +36,14 @@ namespace InputHookManager
 
         //private bool MouseDriverCallback_OnMouseMove(int x, int y)
         //{
-            //KeyStates[key] = true; // Update the key state to pressed
-            //KeyActionHandler(KeyMappingsPressed);
+        //KeyStates[key] = true; // Update the key state to pressed
+        //KeyActionHandler(KeyMappingsPressed);
 
-            //if (SuppressedKeys.Contains(new HotKey(key)))
-            //    return false; // If the key is suppressed, we don't want to pass the key press further
+        //if (SuppressedKeys.Contains(new HotKey(key)))
+        //    return false; // If the key is suppressed, we don't want to pass the key press further
 
         //    return true;
         //}
-
-        public static void SetMouse(int x, int y) => Interception.SetMouse(x, y);
-        public static void MoveMouse(int x, int y) => Interception.MoveMouse(x, y);
-        public static void LeftClick() => Interception.LeftClick();
-        public static void LeftClick(int x, int y, bool relative) => Interception.LeftClick(x, y, relative);
-        public static void RightClick() => Interception.RightClick();
-        public static void RightClick(int x, int y, bool relative) => Interception.RightClick(x, y, relative);
 
         private InputKey GetPressedKey(IntPtr wParam, int xButtonValue = 1)
         {

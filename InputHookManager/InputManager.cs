@@ -7,14 +7,15 @@ namespace InputHookManager
 {
     public partial class InputManager : IDisposable
     {
-        public ISimulator Simulator = new WinApi();
-        public IntPtr Hwnd = IntPtr.Zero;
         internal Dictionary<InputKey[], Action<object>> KeyMappingsPressed = new(new InputKeyArrayComparer());
         internal Dictionary<InputKey[], Action<object>> KeyMappingsReleased = new(new InputKeyArrayComparer());
         internal static Dictionary<InputKey, bool> KeyStates = [];
         internal HashSet<InputKey[]> GlobalKeys = new(new InputKeyArrayComparer());
         internal HashSet<InputKey[]> SuppressedKeys = new(new InputKeyArrayComparer());
+        internal ISimulator Simulator = new WinApi();
+        internal bool ActionInProgress = false;
         internal bool IsHookActive = true;
+        public IntPtr Hwnd = IntPtr.Zero;
 
         /// <summary>
         ///     Initialize a <see cref="InputManager"/>.
@@ -67,6 +68,7 @@ namespace InputHookManager
 
             CaptureMessages();
         }
+        
         public void Update(object sender)
         {
             var procInfo = (ProcessInfo)sender;
