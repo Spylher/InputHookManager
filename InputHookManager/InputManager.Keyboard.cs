@@ -36,8 +36,32 @@ public partial class InputManager
     {
         foreach (var (inputKeys, action) in keyMappings.OrderByDescending(pair => pair.Key.Length))
         {
-            if (IsKeyDown(inputKeys) && (GlobalKeys.Contains(inputKeys) && IsHookActive || WinApi.IsActiveWindow(Hwnd)))
+            if (IsKeyDown(inputKeys) && (GlobalKeys.Contains(inputKeys) || WinApi.IsActiveWindow(Hwnd)) && IsHookActive)
             {
+                //If Ctrl is pressed, it must be in the keys array
+                if (IsKeyDown(InputKey.LControl) && !inputKeys.Contains(InputKey.LControl))
+                    return false;
+                if (IsKeyDown(InputKey.RControl) && !inputKeys.Contains(InputKey.RControl))
+                    return false;
+
+                // If Shift is pressed, it must be in the keys array
+                if (IsKeyDown(InputKey.LAlt) && !inputKeys.Contains(InputKey.LAlt))
+                    return false;
+                if (IsKeyDown(InputKey.RAlt) && !inputKeys.Contains(InputKey.RAlt))
+                    return false;
+
+                // If Shift is pressed, it must be in the keys array
+                if (IsKeyDown(InputKey.LShift) && !inputKeys.Contains(InputKey.LShift))
+                    return false;
+                if (IsKeyDown(InputKey.RShift) && !inputKeys.Contains(InputKey.RShift))
+                    return false;
+
+                // If Windows key is pressed, it must be in the keys array
+                if (IsKeyDown(InputKey.LWin) && !inputKeys.Contains(InputKey.LWin))
+                    return false;
+                if (IsKeyDown(InputKey.RWWin) && !inputKeys.Contains(InputKey.RWWin))
+                    return false;
+
                 // Reset the state of the hotkey to avoid strange behavior
                 ChangeKeyState(inputKeys, false);
 

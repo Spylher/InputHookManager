@@ -33,7 +33,7 @@ namespace InputHookManager
                 Interception.CancelableOnKeyDown += KeyboardDriverCallback_OnKeyDown;
                 Interception.CancelableOnKeyUp += KeyboardDriverCallback_OnKeyUp;
                 Interception.CancelableOnMouseMove += OnMouseMove;
-                
+
                 // To do
                 // This is a workaround for the Interception driver to handle mouse movement events.
                 static bool OnMouseMove(int x, int y)
@@ -68,11 +68,18 @@ namespace InputHookManager
 
             CaptureMessages();
         }
-        
+
         public void Update(object sender)
         {
-            var procInfo = (ProcessInfo)sender;
-            Hwnd = procInfo.Handle;
+            var handler = sender switch
+            {
+                ProcessInfo procInfo => procInfo.MainWindowHandle,
+                Process proc => proc.MainWindowHandle,
+                IntPtr hwnd => hwnd,
+                _ => throw new ArgumentException("Invalid sender type. Expected ProcessInfo, Process or hwnd.")
+            };
+
+            Hwnd = handler;
         }
 
         /// <summary>
