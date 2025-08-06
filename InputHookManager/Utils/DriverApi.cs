@@ -94,6 +94,8 @@ namespace InputHookManager.Utils
                 Interception.MoveMouse(x, y);
             else
                 Interception.SetMouse(x, y);
+
+            Thread.Sleep(1);
         }
 
         public void SetMouseWheel(int delta) => Interception.SetMouseWheel((short)delta);
