@@ -28,6 +28,12 @@ namespace InputHookManager
 
             if (executionMode == ExecutionMode.KernelMode)
             {
+                var keyboardPath = Path.Combine(Environment.SystemDirectory, "drivers", "keyboard.sys");
+                var mousePath = Path.Combine(Environment.SystemDirectory, "drivers", "mouse.sys");
+
+                if (!File.Exists(keyboardPath) || !File.Exists(mousePath))
+                    throw new Exception("Interception Driver not detected, type InputManager.InstallInterception and reboot your system.");
+
                 Simulator = new DriverApi();
 
                 Interception.CancelableOnKeyDown += KeyboardDriverCallback_OnKeyDown;
@@ -47,6 +53,10 @@ namespace InputHookManager
             else
                 Task.Run(InitializeHooks);
         }
+
+        public static void InstallInterception() => Driver.Program.InstallInterception();
+
+        public static void UninstallInterception() => Driver.Program.UninstallInterception();
 
         private void CaptureMessages()
         {

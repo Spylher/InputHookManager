@@ -8,4 +8,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="InterceptionDriver.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="InterceptionDriver.exe" />
+  </ItemGroup>
+
 </Project>
